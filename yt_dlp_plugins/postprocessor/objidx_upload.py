@@ -21,7 +21,7 @@ class ObjIdxUploadPP(PostProcessor):
         except KeyError as e:
             self.objidx_client = None
             self.to_screen(f'Cannot connect to OI because {str(e)}')
-        self.oipartial = oipartial
+        self.oipartial = bool(oipartial)  # NOTE needed to parse str from CLI
         self.lpmlib = lpmlib
 
 
