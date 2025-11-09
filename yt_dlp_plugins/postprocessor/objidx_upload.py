@@ -1,8 +1,15 @@
 """yt-dlp postprocessor plugin to upload files to OI"""
 
+import json
 from yt_dlp.postprocessor.common import PostProcessor, PostProcessingError
 from obj_idx import client as oic
 from obj_idx import dlp_lpm_meta as oih
+
+def pre_sanitize(obj):
+    """Remove postprocessors from info JSON"""
+    if isinstance(obj, PostProcessor):
+        return obj.__class__.__name__
+    raise TypeError(f"Object of type {obj.__class__.__name__} is not JSON serializable")
 
 # TODO postprocessor hook for upload progress
 
@@ -29,7 +36,11 @@ class ObjIdxUploadPP(PostProcessor):
         """Run the upload"""
         if not (self.objidx_client and self.oibucket):
             raise PostProcessingError('Not uploading because missing OI info')
-        metadata = oih.DLPMetaData(information, partial=self.oipartial)
+        try:
+            sani_info = json.loads(json.dumps(information, default=pre_sanitize))
+        except TypeError as e:
+            raise PostProcessingError(str(e)) from e
+        metadata = oih.DLPMetaData(sani_info, partial=self.oipartial)
         if self.lpmlib:
             metadata.add_lpm(self.lpmlib)
         self.to_screen('Attempting OI upload...')
