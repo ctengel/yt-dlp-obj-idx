@@ -15,7 +15,7 @@ def pre_sanitize(obj):
 
 class ObjIdxUploadPP(PostProcessor):
     """OI uploader postprocessor"""
-    def __init__(self, downloader=None, oibucket=None, oipartial=False, lpmlib=None, **kwargs):
+    def __init__(self, downloader=None, oibucket=None, oipartial=False, lpmlib=None, oitags=None, **kwargs):
         # NOTE Also, "downloader", "when" and "key" are reserved names
         super().__init__(downloader)
         self._kwargs = kwargs
@@ -30,6 +30,11 @@ class ObjIdxUploadPP(PostProcessor):
             self.to_screen(f'Cannot connect to OI because {str(e)}')
         self.oipartial = bool(oipartial)  # NOTE needed to parse str from CLI
         self.lpmlib = lpmlib
+        self._tags = {}
+        if oitags:
+            for item in oitags.split(','):
+                k, v = item.split('=', 1)
+                self._tags[k.strip()] = v.strip()
 
 
     def run(self, information):
@@ -43,6 +48,8 @@ class ObjIdxUploadPP(PostProcessor):
         metadata = oih.DLPMetaData(sani_info, partial=self.oipartial)
         if self.lpmlib:
             metadata.add_lpm(self.lpmlib)
+        if self._tags:
+            metadata.add_tags(self._tags)
         self.to_screen('Attempting OI upload...')
         try:
             oif = metadata.upload(self.objidx_client, self.oibucket)
