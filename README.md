@@ -27,6 +27,25 @@ Possible options (semicolon separated):
 
 It is required to set the usual `OBJIDX_URL` and `OBJIDX_AUTH` environment variables as well.
 
+### File Handling
+
+By default, yt-dlp deletes the local downloaded file after this postprocessor runs successfully, following the standard postprocessor contract where returned files are treated as consumed.
+
+To keep the local file after upload:
+
+- **CLI**: pass `-k` / `--keep-video` to yt-dlp
+- **Python API**: set `keepvideo: True` in your `ydl_opts`
+
+```python
+ydl_opts = {
+    'keepvideo': True,
+    'postprocessors': [{
+        'key': 'ObjIdxUploadPP',
+        'oibucket': 'mybucket',
+    }],
+}
+```
+
 ## Development
 
 See the [Plugin Development](https://github.com/yt-dlp/yt-dlp/wiki/Plugin-Development) section of the yt-dlp wiki.

@@ -24,7 +24,7 @@ class ObjIdxUploadPP(PostProcessor):
         if not oibucket:
             self.to_screen('No OI bucket; cannot upload.')
         try:
-            self.objidx_client = oic.get_obj_idx_env()
+            self.objidx_client = oic.get_obj_idx_env(sw='OIC-DLP-0.4.3')
         except KeyError as e:
             self.objidx_client = None
             self.to_screen(f'Cannot connect to OI because {str(e)}')
