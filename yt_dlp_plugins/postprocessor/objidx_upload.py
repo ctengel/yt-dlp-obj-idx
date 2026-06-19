@@ -45,7 +45,8 @@ class ObjIdxUploadPP(PostProcessor):
             sani_info = json.loads(json.dumps(information, default=pre_sanitize))
         except TypeError as e:
             raise PostProcessingError(str(e)) from e
-        metadata = oih.DLPMetaData(sani_info, partial=self.oipartial)
+        partial = self.oipartial or bool(information.get('is_live'))
+        metadata = oih.DLPMetaData(sani_info, partial=partial)
         if self.lpmlib:
             metadata.add_lpm(self.lpmlib)
         if self._tags:
