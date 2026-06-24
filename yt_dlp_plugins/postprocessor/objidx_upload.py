@@ -57,7 +57,7 @@ class ObjIdxUploadPP(PostProcessor):
         except Exception as e:
             raise PostProcessingError(str(e)) from e
         self.to_screen(f'Uploaded as {oif.uuid}')
-        information['oi_uuid'] = oif.uuid
+        information['oi_uuid'] = str(oif.uuid)
         assert oif.object['completed']
         assert not oif.object['deleted']
         return [str(metadata.get_media_file())], information
